@@ -10,6 +10,7 @@ public class Main {
 
         Scanner scanner = new Scanner(System.in);
 
+        // REGISTRATION
         System.out.println("=== USER REGISTRATION ===");
 
         System.out.print("Enter username: ");
@@ -22,6 +23,18 @@ public class Main {
         String cell = scanner.nextLine();
 
         System.out.println(registerUser(username, password, cell));
+
+        // LOGIN
+        System.out.println("\n=== USER LOGIN ===");
+
+        System.out.print("Enter username: ");
+        String loginUsername = scanner.nextLine();
+
+        System.out.print("Enter password: ");
+        String loginPassword = scanner.nextLine();
+
+        boolean loginSuccess = loginUser(loginUsername, loginPassword);
+        System.out.println(returnLoginStatus(loginSuccess));
 
         System.out.println("User program finished");
 
@@ -47,5 +60,17 @@ public class Main {
         registeredCell = cell;
 
         return "User successfully registered";
+    }
+
+    public static boolean loginUser(String username, String password) {
+        return username.equals(registeredUsername) && password.equals(registeredPassword);
+    }
+
+    public static String returnLoginStatus(boolean status) {
+        if (status) {
+            return "Welcome, it is great to see you again.";
+        } else {
+            return "Username or password incorrect, please try again.";
+        }
     }
 }
