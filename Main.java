@@ -5,8 +5,6 @@ import java.util.ArrayList;
 
 public class Main {
 
-    static int messageCounter = 0;
-
     static ArrayList<String> sentMessages = new ArrayList<>();
     static ArrayList<String> storedMessages = new ArrayList<>();
     static ArrayList<String> discardedMessages = new ArrayList<>();
@@ -22,12 +20,13 @@ public class Main {
 
         do {
 
-            System.out.println("\nChoose an option:");
-            System.out.println("1. Send Message");
-            System.out.println("2. Show Messages");
-            System.out.println("3. Search Messages");
-            System.out.println("4. Delete Message");
-            System.out.println("5. Quit");
+            System.out.println("\n1. Send");
+            System.out.println("2. Show Sent");
+            System.out.println("3. Search");
+            System.out.println("4. Delete");
+            System.out.println("5. Longest Message");
+            System.out.println("6. Report");
+            System.out.println("7. Quit");
 
             choice = readInt(input);
 
@@ -35,50 +34,20 @@ public class Main {
 
                 case 1:
 
-                    System.out.println("Enter recipient number:");
+                    System.out.println("Recipient:");
                     String recipient = input.nextLine();
 
-                    System.out.println("Enter message (max 250 chars):");
+                    System.out.println("Message:");
                     String text = input.nextLine();
 
-                    messageCounter++;
+                    String id = String.valueOf(System.currentTimeMillis());
+                    String hash = id.substring(0,2) + ":" + text.split(" ")[0].toUpperCase();
 
-                    Message msg = new Message("", recipient, text, messageCounter);
-
-                    if (!msg.checkMessageLength()) {
-                        System.out.println("Message exceeds 250 characters");
-                        break;
-                    }
-
-                    if (!msg.checkRecipientCell()) {
-                        System.out.println("Invalid recipient number format");
-                        break;
-                    }
-
-                    String id = msg.getMessageID();
-                    String hash = msg.createMessageHash();
-
-                    System.out.println("\nMessage Hash: " + hash);
-
-                    System.out.println("\nChoose action:");
-                    System.out.println("1. Send");
-                    System.out.println("2. Discard");
-                    System.out.println("3. Store");
-
-                    int action = readInt(input);
-
-                    if (action == 1) {
-                        sentMessages.add(text);
-                    } else if (action == 2) {
-                        discardedMessages.add(text);
-                    } else if (action == 3) {
-                        storedMessages.add(text);
-                        storeMessageToJSON(id, hash, recipient, text);
-                    }
-
+                    sentMessages.add(text);
                     messageIDs.add(id);
                     messageHashes.add(hash);
 
+                    System.out.println("Sent");
                     break;
 
                 case 2:
@@ -89,57 +58,72 @@ public class Main {
 
                 case 3:
 
-                    System.out.println("Enter Message ID:");
-                    String searchID = input.nextLine();
+                    System.out.println("Enter ID:");
+                    String search = input.nextLine();
 
                     boolean found = false;
 
                     for (int i = 0; i < messageIDs.size(); i++) {
-                        if (messageIDs.get(i).equals(searchID)) {
+                        if (messageIDs.get(i).equals(search)) {
                             System.out.println(sentMessages.get(i));
                             found = true;
                         }
                     }
 
-                    if (!found) {
-                        System.out.println("Not found");
-                    }
+                    if (!found) System.out.println("Not found");
 
                     break;
 
                 case 4:
 
-                    System.out.println("Enter Message Hash to delete:");
-                    String delHash = input.nextLine();
-
-                    boolean deleted = false;
+                    System.out.println("Enter Hash:");
+                    String del = input.nextLine();
 
                     for (int i = 0; i < messageHashes.size(); i++) {
-                        if (messageHashes.get(i).equals(delHash)) {
+                        if (messageHashes.get(i).equals(del)) {
 
                             sentMessages.remove(i);
                             messageIDs.remove(i);
                             messageHashes.remove(i);
 
-                            System.out.println("Message deleted successfully");
-                            deleted = true;
+                            System.out.println("Deleted");
                             break;
                         }
                     }
+                    break;
 
-                    if (!deleted) {
-                        System.out.println("Hash not found");
+                case 5:
+
+                    String longest = "";
+
+                    for (String m : sentMessages) {
+                        if (m.length() > longest.length()) {
+                            longest = m;
+                        }
+                    }
+
+                    System.out.println("Longest message: " + longest);
+                    break;
+
+                case 6:
+
+                    System.out.println("REPORT:");
+
+                    for (int i = 0; i < sentMessages.size(); i++) {
+                        System.out.println("------------------");
+                        System.out.println("ID: " + messageIDs.get(i));
+                        System.out.println("HASH: " + messageHashes.get(i));
+                        System.out.println("MESSAGE: " + sentMessages.get(i));
                     }
 
                     break;
 
-                case 5:
-                    System.out.println("Goodbye!");
+                case 7:
+                    System.out.println("Bye");
                     break;
-
             }
 
-        } while (choice != 5);
+        } while (choice != 7);
     }
 
     public static int readInt(Scanner input) {
@@ -147,18 +131,8 @@ public class Main {
             input.nextLine();
             System.out.println("Enter number:");
         }
-        int val = input.nextInt();
+        int v = input.nextInt();
         input.nextLine();
-        return val;
-    }
-
-    public static void storeMessageToJSON(String id, String hash, String recipient, String text) {
-        try {
-            FileWriter writer = new FileWriter("messages.json", true);
-            writer.write("{\"id\":\"" + id + "\",\"hash\":\"" + hash + "\",\"recipient\":\"" + recipient + "\",\"message\":\"" + text + "\"}\n");
-            writer.close();
-        } catch (IOException e) {
-            System.out.println("Error");
-        }
+        return v;
     }
 }
