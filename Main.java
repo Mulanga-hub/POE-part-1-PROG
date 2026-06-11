@@ -1,11 +1,18 @@
 import java.util.Scanner;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class Main {
 
     static int messageCounter = 0;
-    static java.util.ArrayList<String> messages = new java.util.ArrayList<>();
+
+    // ===== PART 3 REQUIRED ARRAYS =====
+    static ArrayList<String> sentMessages = new ArrayList<>();
+    static ArrayList<String> storedMessages = new ArrayList<>();
+    static ArrayList<String> discardedMessages = new ArrayList<>();
+    static ArrayList<String> messageIDs = new ArrayList<>();
+    static ArrayList<String> messageHashes = new ArrayList<>();
 
     public static void main(String[] args) {
 
@@ -22,8 +29,7 @@ public class Main {
             System.out.println("2. Show recently sent messages");
             System.out.println("3. Quit");
 
-            choice = input.nextInt();
-            input.nextLine();
+            choice = readInt(input);
 
             switch (choice) {
 
@@ -50,7 +56,7 @@ public class Main {
                         break;
                     }
 
-                    String id = msg.generateMessageID();
+                    String id = msg.getMessageID();
                     String hash = msg.createMessageHash();
 
                     System.out.println("\nMessage Hash: " + hash);
@@ -60,39 +66,34 @@ public class Main {
                     System.out.println("2. Discard Message");
                     System.out.println("3. Store Message");
 
-                    int action = input.nextInt();
-                    input.nextLine();
+                    int action = readInt(input);
 
                     switch (action) {
 
                         case 1:
                             System.out.println("Message successfully sent.");
 
-                            messages.add(
-                                    "ID: " + id +
-                                    " | HASH: " + hash +
-                                    " | RECIPIENT: " + recipient +
-                                    " | MESSAGE: " + text
-                            );
-
+                            sentMessages.add(text);
+                            messageIDs.add(id);
+                            messageHashes.add(hash);
                             break;
 
                         case 2:
                             System.out.println("Message discarded.");
+
+                            discardedMessages.add(text);
+                            messageIDs.add(id);
+                            messageHashes.add(hash);
                             break;
 
                         case 3:
                             System.out.println("Message successfully stored.");
 
-                            messages.add(
-                                    "ID: " + id +
-                                    " | HASH: " + hash +
-                                    " | RECIPIENT: " + recipient +
-                                    " | MESSAGE: " + text
-                            );
+                            storedMessages.add(text);
+                            messageIDs.add(id);
+                            messageHashes.add(hash);
 
                             storeMessageToJSON(id, hash, recipient, text);
-
                             break;
 
                         default:
@@ -103,11 +104,11 @@ public class Main {
 
                 case 2:
 
-                    if (messages.isEmpty()) {
+                    if (sentMessages.isEmpty()) {
                         System.out.println("No messages sent yet.");
                     } else {
                         System.out.println("Recently sent messages:");
-                        for (String m : messages) {
+                        for (String m : sentMessages) {
                             System.out.println(m);
                         }
                     }
@@ -124,6 +125,20 @@ public class Main {
 
         } while (choice != 3);
 
+    }
+
+    public static int readInt(Scanner input) {
+
+        while (true) {
+            if (input.hasNextInt()) {
+                int value = input.nextInt();
+                input.nextLine();
+                return value;
+            }
+
+            System.out.println("Invalid input. Please enter a number.");
+            input.nextLine();
+        }
     }
 
     public static void storeMessageToJSON(String id, String hash, String recipient, String text) {

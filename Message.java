@@ -25,7 +25,7 @@ public class Message {
     }
 
     public String generateMessageID() {
-        return String.valueOf((long)(Math.random() * 1000000000L));
+        return String.format("%09d", (long) (Math.random() * 1000000000L));
     }
 
     public String createMessageHash() {
