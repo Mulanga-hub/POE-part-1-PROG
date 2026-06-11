@@ -7,7 +7,6 @@ public class Main {
 
     static int messageCounter = 0;
 
-    // ===== PART 3 REQUIRED ARRAYS =====
     static ArrayList<String> sentMessages = new ArrayList<>();
     static ArrayList<String> storedMessages = new ArrayList<>();
     static ArrayList<String> discardedMessages = new ArrayList<>();
@@ -17,7 +16,6 @@ public class Main {
     public static void main(String[] args) {
 
         Scanner input = new Scanner(System.in);
-
         int choice;
 
         System.out.println("Welcome to QuickChat");
@@ -27,7 +25,8 @@ public class Main {
             System.out.println("\nChoose an option:");
             System.out.println("1. Send Message");
             System.out.println("2. Show recently sent messages");
-            System.out.println("3. Quit");
+            System.out.println("3. Search Messages");
+            System.out.println("4. Quit");
 
             choice = readInt(input);
 
@@ -42,9 +41,8 @@ public class Main {
                     String text = input.nextLine();
 
                     messageCounter++;
-                    int messageNumber = messageCounter;
 
-                    Message msg = new Message("", recipient, text, messageNumber);
+                    Message msg = new Message("", recipient, text, messageCounter);
 
                     if (!msg.checkMessageLength()) {
                         System.out.println("Message exceeds 250 characters");
@@ -68,36 +66,28 @@ public class Main {
 
                     int action = readInt(input);
 
-                    switch (action) {
+                    if (action == 1) {
 
-                        case 1:
-                            System.out.println("Message successfully sent.");
+                        sentMessages.add(text);
+                        messageIDs.add(id);
+                        messageHashes.add(hash);
+                        System.out.println("Message successfully sent.");
 
-                            sentMessages.add(text);
-                            messageIDs.add(id);
-                            messageHashes.add(hash);
-                            break;
+                    } else if (action == 2) {
 
-                        case 2:
-                            System.out.println("Message discarded.");
+                        discardedMessages.add(text);
+                        messageIDs.add(id);
+                        messageHashes.add(hash);
+                        System.out.println("Message discarded.");
 
-                            discardedMessages.add(text);
-                            messageIDs.add(id);
-                            messageHashes.add(hash);
-                            break;
+                    } else if (action == 3) {
 
-                        case 3:
-                            System.out.println("Message successfully stored.");
+                        storedMessages.add(text);
+                        messageIDs.add(id);
+                        messageHashes.add(hash);
 
-                            storedMessages.add(text);
-                            messageIDs.add(id);
-                            messageHashes.add(hash);
-
-                            storeMessageToJSON(id, hash, recipient, text);
-                            break;
-
-                        default:
-                            System.out.println("Invalid option.");
+                        storeMessageToJSON(id, hash, recipient, text);
+                        System.out.println("Message successfully stored.");
                     }
 
                     break;
@@ -107,7 +97,6 @@ public class Main {
                     if (sentMessages.isEmpty()) {
                         System.out.println("No messages sent yet.");
                     } else {
-                        System.out.println("Recently sent messages:");
                         for (String m : sentMessages) {
                             System.out.println(m);
                         }
@@ -116,6 +105,27 @@ public class Main {
                     break;
 
                 case 3:
+
+                    System.out.println("Enter Message ID:");
+                    String searchID = input.nextLine();
+
+                    boolean found = false;
+
+                    for (int i = 0; i < messageIDs.size(); i++) {
+                        if (messageIDs.get(i).equals(searchID)) {
+                            System.out.println("Message found: " + sentMessages.get(i));
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (!found) {
+                        System.out.println("Message ID not found.");
+                    }
+
+                    break;
+
+                case 4:
                     System.out.println("Goodbye!");
                     break;
 
@@ -123,19 +133,16 @@ public class Main {
                     System.out.println("Invalid option");
             }
 
-        } while (choice != 3);
-
+        } while (choice != 4);
     }
 
     public static int readInt(Scanner input) {
-
         while (true) {
             if (input.hasNextInt()) {
                 int value = input.nextInt();
                 input.nextLine();
                 return value;
             }
-
             System.out.println("Invalid input. Please enter a number.");
             input.nextLine();
         }
@@ -155,8 +162,6 @@ public class Main {
             writer.write("}\n\n");
 
             writer.close();
-
-            System.out.println("Message stored in JSON file.");
 
         } catch (IOException e) {
             System.out.println("Error writing to file.");
