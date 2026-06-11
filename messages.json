@@ -1,0 +1,30 @@
+[
+  {
+    "id": "1718062800123",
+    "hash": "17:HELLO",
+    "recipient": "Alice",
+    "text": "Hello Alice!",
+    "status": "sent"
+  },
+  {
+    "id": "1718062801456",
+    "hash": "17:HOW",
+    "recipient": "Bob",
+    "text": "How are you doing today?",
+    "status": "sent"
+  },
+  {
+    "id": "1718062802789",
+    "hash": "17:THANKS",
+    "recipient": "Charlie",
+    "text": "Thanks for the help!",
+    "status": "stored"
+  },
+  {
+    "id": "1718062803012",
+    "hash": "17:SORRY",
+    "recipient": "Diana",
+    "text": "Sorry, I cannot attend",
+    "status": "discarded"
+  }
+]
