@@ -24,9 +24,10 @@ public class Main {
 
             System.out.println("\nChoose an option:");
             System.out.println("1. Send Message");
-            System.out.println("2. Show recently sent messages");
+            System.out.println("2. Show Messages");
             System.out.println("3. Search Messages");
-            System.out.println("4. Quit");
+            System.out.println("4. Delete Message");
+            System.out.println("5. Quit");
 
             choice = readInt(input);
 
@@ -59,49 +60,31 @@ public class Main {
 
                     System.out.println("\nMessage Hash: " + hash);
 
-                    System.out.println("\nChoose an action:");
-                    System.out.println("1. Send Message");
-                    System.out.println("2. Discard Message");
-                    System.out.println("3. Store Message");
+                    System.out.println("\nChoose action:");
+                    System.out.println("1. Send");
+                    System.out.println("2. Discard");
+                    System.out.println("3. Store");
 
                     int action = readInt(input);
 
                     if (action == 1) {
-
                         sentMessages.add(text);
-                        messageIDs.add(id);
-                        messageHashes.add(hash);
-                        System.out.println("Message successfully sent.");
-
                     } else if (action == 2) {
-
                         discardedMessages.add(text);
-                        messageIDs.add(id);
-                        messageHashes.add(hash);
-                        System.out.println("Message discarded.");
-
                     } else if (action == 3) {
-
                         storedMessages.add(text);
-                        messageIDs.add(id);
-                        messageHashes.add(hash);
-
                         storeMessageToJSON(id, hash, recipient, text);
-                        System.out.println("Message successfully stored.");
                     }
+
+                    messageIDs.add(id);
+                    messageHashes.add(hash);
 
                     break;
 
                 case 2:
-
-                    if (sentMessages.isEmpty()) {
-                        System.out.println("No messages sent yet.");
-                    } else {
-                        for (String m : sentMessages) {
-                            System.out.println(m);
-                        }
+                    for (String m : sentMessages) {
+                        System.out.println(m);
                     }
-
                     break;
 
                 case 3:
@@ -113,58 +96,69 @@ public class Main {
 
                     for (int i = 0; i < messageIDs.size(); i++) {
                         if (messageIDs.get(i).equals(searchID)) {
-                            System.out.println("Message found: " + sentMessages.get(i));
+                            System.out.println(sentMessages.get(i));
                             found = true;
-                            break;
                         }
                     }
 
                     if (!found) {
-                        System.out.println("Message ID not found.");
+                        System.out.println("Not found");
                     }
 
                     break;
 
                 case 4:
+
+                    System.out.println("Enter Message Hash to delete:");
+                    String delHash = input.nextLine();
+
+                    boolean deleted = false;
+
+                    for (int i = 0; i < messageHashes.size(); i++) {
+                        if (messageHashes.get(i).equals(delHash)) {
+
+                            sentMessages.remove(i);
+                            messageIDs.remove(i);
+                            messageHashes.remove(i);
+
+                            System.out.println("Message deleted successfully");
+                            deleted = true;
+                            break;
+                        }
+                    }
+
+                    if (!deleted) {
+                        System.out.println("Hash not found");
+                    }
+
+                    break;
+
+                case 5:
                     System.out.println("Goodbye!");
                     break;
 
-                default:
-                    System.out.println("Invalid option");
             }
 
-        } while (choice != 4);
+        } while (choice != 5);
     }
 
     public static int readInt(Scanner input) {
-        while (true) {
-            if (input.hasNextInt()) {
-                int value = input.nextInt();
-                input.nextLine();
-                return value;
-            }
-            System.out.println("Invalid input. Please enter a number.");
+        while (!input.hasNextInt()) {
             input.nextLine();
+            System.out.println("Enter number:");
         }
+        int val = input.nextInt();
+        input.nextLine();
+        return val;
     }
 
     public static void storeMessageToJSON(String id, String hash, String recipient, String text) {
-
         try {
-
             FileWriter writer = new FileWriter("messages.json", true);
-
-            writer.write("{\n");
-            writer.write("\"id\": \"" + id + "\",\n");
-            writer.write("\"hash\": \"" + hash + "\",\n");
-            writer.write("\"recipient\": \"" + recipient + "\",\n");
-            writer.write("\"message\": \"" + text + "\"\n");
-            writer.write("}\n\n");
-
+            writer.write("{\"id\":\"" + id + "\",\"hash\":\"" + hash + "\",\"recipient\":\"" + recipient + "\",\"message\":\"" + text + "\"}\n");
             writer.close();
-
         } catch (IOException e) {
-            System.out.println("Error writing to file.");
+            System.out.println("Error");
         }
     }
 }
